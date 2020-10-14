@@ -22,5 +22,7 @@ df1_mom_returns <- read_xlsx("/Users/ataru074/Desktop/Education/MBA/03 2020 Fall
 
 df1_portfolio_strategies <- read_xlsx("/Users/ataru074/Desktop/Education/MBA/03 2020 Fall/FIN511 Investments/213722-XLS-ENG.xlsx", sheet = 3, skip = 3)
 
+rt_vol_risky_and_rf <- read_xlsx("/Users/ataru074/Desktop/Education/MBA/03 2020 Fall/FIN511 Investments/Return-Volatility-EXAMPLES.xlsx", sheet = 1, skip = 1)
 
+rt_vol_risky_assets <- read_xlsx("/Users/ataru074/Desktop/Education/MBA/03 2020 Fall/FIN511 Investments/Return-Volatility-EXAMPLES.xlsx", sheet = 2, skip = 1)
 ```

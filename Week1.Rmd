@@ -1,6 +1,8 @@
 ---
 title: "FIN511 Week 1"
-output: html_notebook
+output:
+  html_document:
+    df_print: paged
 ---
 
 First code chunk used to load the necessary libraries in R

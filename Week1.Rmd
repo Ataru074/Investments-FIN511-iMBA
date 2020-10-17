@@ -3,15 +3,24 @@ title: "FIN511 Week 1"
 output: html_notebook
 ---
 
+First code chunk used to load the necessary libraries in R
+if you don't have these libraries, please uncomment the code and install them or install them in R-Studio.
+
 ```{r}
 # load libraries
 
-# install readxl and tidyverse (or just ggplot2)
-# install.packages("readxl","ggplot2")
+# install readxl and tidyverse (or just ggplot2 and dyplr)
+# install.packages("readxl","ggplot2","dplyr")
 
 library(ggplot2)
 library(readxl)
+library(dplyr)
 ```
+
+The following code chunk shows a very "dumb" way to load excel spreadsheets in R directly, skipping lines
+if necessary, like in this case and use the function "head" to see if the spreadsheet is loaded properly
+
+
 ```{r}
 # Load all the datasets and separate sheets, clean up the data and leave a single row for column names.
 # You will still need the original excel sheet to read the instructions at the top or additional informations
@@ -25,4 +34,95 @@ df1_portfolio_strategies <- read_xlsx("/Users/ataru074/Desktop/Education/MBA/03 
 rt_vol_risky_and_rf <- read_xlsx("/Users/ataru074/Desktop/Education/MBA/03 2020 Fall/FIN511 Investments/Return-Volatility-EXAMPLES.xlsx", sheet = 1, skip = 1)
 
 rt_vol_risky_assets <- read_xlsx("/Users/ataru074/Desktop/Education/MBA/03 2020 Fall/FIN511 Investments/Return-Volatility-EXAMPLES.xlsx", sheet = 2, skip = 1)
+
+head(df1_mom_returns)
+```
+Lets replicate the "two risky assets" spreadsheet
+
+Step 1, let's get all the information together and organize it in a dataframe (a structure similar to a spreadsheet)
+```{r}
+# Risk Free rate
+RF <- 3
+# The large Weight is a sequence that goes from -1 to 2 in 0.01 steps
+Large_Weight <- seq(-1,2,0.01)
+# The Small Weight is simply 1 - Large Weight
+Small_Weight <- 1 - Large_Weight
+
+# Large return
+LR <- 8
+# Small return
+SR <- 15
+
+# Correlation (using CR because cor is an R funcion therefore reserved word)
+CR <- 0.4
+
+# Large Standard Deviation
+LSD <- 25
+# Small Standard Deviation 
+SSD <- 50
+
+# lets create the dataframe. Note, R automatically recycle variables to fit the lenght of the dataframe
+# therefore is important that the first variable is the correct lenght.
+
+df <- data.frame("RF" = RF ,"Large_Weight" = Large_Weight, "Small_Weight" = Small_Weight, "LR" = LR, "SR" = SR,
+                 "CR" = CR, "LSD" = LSD, "SSD" = SSD)
+
+# We could have also avoided all the variable declarations and just do:
+# df <- data.frame("Large_Weight" = seq(-1,2,0.01), "Small_Weight" = 1 - seq(-1,2,0.01), "LR" = 8)
+
+# Now let's add the calculated columns (note that column can be added just using df "$" name_of_the_column)
+# and we use the dollar sign to select the column by name as well
+# Important Don't use spaces in the name of columns or variables or anything in general, it's just bad 
+# practice at best and in most cases the software will give you an error
+df$Portfolio_SD <- sqrt(df$Large_Weight^2 * df$LSD^2 + df$Small_Weight^2 * df$SSD^2 + 
+                          2*df$CR*df$Large_Weight*df$LSD*df$Small_Weight*df$SSD)
+
+df$Portfolio_Return <- df$Large_Weight*df$LR + df$Small_Weight*df$SR
+
+df$Sharpe_Ratio <- (df$Portfolio_Return - df$RF)/df$Portfolio_SD
+
+# let's verify that our dataframe is created correctly
+head(df)
+tail(df)
+```
+
+Now that the data has been created, let's create the charts in ggplot2
+protip: download the ggplot2 cheat sheet https://rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf
+
+```{r}
+# Let's use GGPLOT to create our charts, it gives us more customization abilities
+# for example we can encode the sharpe ratio as color along the curve
+
+ggplot(df, aes(x=Portfolio_SD, y=Portfolio_Return)) +
+  geom_point(aes(color=Sharpe_Ratio)) +
+  xlab("Portfolio Standard Deviation") +
+  ylab("Portfolio rate or return (in %)")
+  
+```
+
+Let's create the second chart without the option of shorting
+```{r}
+# Careful, I'm using the filter function from the package dplyr, which is different from the standard
+# one, therefore, load dyplr as library.
+
+ggplot(filter(df, Large_Weight < 1, Small_Weight < 1), aes(x=Portfolio_SD, y=Portfolio_Return)) +
+  geom_point(aes(color=Sharpe_Ratio)) +
+  xlab("Portfolio Standard Deviation") +
+  ylab("Portfolio rate or return (in %)")
+```
+
+```{r}
+
+```
+
+```{r}
+
+```
+
+```{r}
+
+```
+
+```{r}
+
 ```

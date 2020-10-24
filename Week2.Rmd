@@ -139,7 +139,15 @@ summary(model.3)
 
 R-squared: `r r_squared.3`
 
+
+### Load the Three mystery securities
+
 ```{r}
+df.3.myst <- read_xlsx("/Users/ataru074/Desktop/Education/MBA/03 2020 Fall/FIN511 Investments/ThreeMysterySecurities.xlsx", sheet = 1, skip = 3)
+
+df.3.myst <- df.3.myst[,-6]
+
+head(df.3.myst)
 
 ```
 

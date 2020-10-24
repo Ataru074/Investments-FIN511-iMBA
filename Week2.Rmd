@@ -1,0 +1,169 @@
+---
+title: "FIN511 Week 2"
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+---
+
+First code chunk used to load the necessary libraries in R
+if you don't have these libraries, please uncomment the code and install them or install them in R-Studio.
+
+```{r}
+# load libraries
+
+# install readxl and tidyverse (or just ggplot2 and dyplr)
+# install.packages("readxl","ggplot2","dplyr")
+
+library(ggplot2)
+library(readxl)
+```
+
+The following code chunk shows a very "dumb" way to load excel spreadsheets in R directly, skipping lines
+if necessary, like in this case and use the function "head" to see if the spreadsheet is loaded properly
+
+
+```{r}
+# Load all the datasets and separate sheets, clean up the data and leave a single row for column names.
+# You will still need the original excel sheet to read the instructions at the top or additional informations
+# modify the files paths to match your needs
+# I didn't set working directories or anything else to keep the customization to a minimum
+
+# This excel spreadsheet is not very clean, data starts on row 4, there is an empty column and on column J there are  calculations.
+# Let see how to clean it up.
+
+
+df.small_value <- read_xlsx("/Users/ataru074/Desktop/Education/MBA/03 2020 Fall/FIN511 Investments/SmallValue_1927_2014.xlsx", sheet = 1, skip = 3)
+
+# we observe that column 6 is empty and 9 and 10 are not useful
+head(df.small_value)
+
+# let's clean up: nothing easier, we just say that our dataframe is the same dataframe minus column 6,9 and 10
+# just remember that the indexes in the square brakets are [rows, columns] and notice the "-c" that indicates 
+# minus this list, otherwise we would have kept only column 6, 9, 10
+
+df.small_value <- df.small_value[,-c(6,9,10)]
+
+# double check
+head(df.small_value)
+```
+## Evaluation of Small-Value Stock investment strategy
+
+here we are going to compute the required values and present them.
+
+```{r}
+# computation of the values, rounded to the third digit
+av.return.in.pct = round(mean(df.small_value$SmallValue),digits = 3)
+av.exc.ret.in.pct = round(mean(df.small_value$SmallValue_RF),digits = 3)
+us.stock.mkt.exc.ret = round(mean(df.small_value$Mkt_RF), digits = 3)
+small.cap.minus.large.cap = round(mean(df.small_value$SMB), digits = 3)
+value.min.growth = round(mean(df.small_value$HML), digits = 3)
+
+```
+
+Now we can report:
+
+Small-Value Stocks Return(SmallValue): `r av.return.in.pct`%
+
+Small-Value Stocks Excess Return (SmallValue_RF): `r av.exc.ret.in.pct`%
+
+US Stock Market Excess Return (Mkt_RF): `r us.stock.mkt.exc.ret`%
+
+Small-cap minus Large-cap Stocks (SMB): `r small.cap.minus.large.cap`%
+
+Value minus Growth Stocks (HML): `r value.min.growth`%
+
+## Small value stocks CAPM
+```{r}
+# step 1 let build the model (lm is the function for linear models, and the regression is a linear model)
+model <- lm(SmallValue_RF ~ Mkt_RF ,data=df.small_value)
+
+# step 2 let see the model and extract the coefficients
+model
+
+alpha <- model$coefficients[[1]]
+beta <- model$coefficients[[2]]
+
+# step 3 let verify r-squared
+r_squared <- summary(model)$r.squared
+
+# let show the anova table to verify if the model is valid 
+anova(model)
+
+# and the summary of the model
+summary(model)
+```
+
+Average return (in %): `r av.return.in.pct`%
+
+Average excess return (in %): `r av.exc.ret.in.pct`%
+
+CAPM alpha (in %): `r alpha`
+
+CAPM market beta: `r beta`
+
+R-squared: `r r_squared` 
+
+
+## 3-Factor model
+```{r}
+# step 1 let build the model
+model.3 <- lm(SmallValue_RF ~ Mkt_RF + SMB + HML ,data=df.small_value)
+
+# step 2 let see the model and extract the coefficients
+model.3
+
+# notice the index values reflect the order in which the variables are put in the equation
+# except for alpha (intercept) which will be 1
+alpha.3 <- model.3$coefficients[[1]]
+beta.3.market <- model.3$coefficients[[2]]
+beta.3.size <- model.3$coefficients[[3]]
+beta.3.value <- model.3$coefficients[[4]]
+# step 3 let verify r-squared
+r_squared.3 <- summary(model.3)$r.squared
+
+# let show the anova table to verify if the model is valid 
+anova(model.3)
+
+# and the summary of the model
+summary(model.3)
+```
+
+3-Factor alpha (in %): `r alpha.3`
+
+3-Factor market beta: `r beta.3.market`
+
+3-Factor size beta: `r beta.3.size`
+
+3-Factor value: `r beta.3.value`
+
+R-squared: `r r_squared.3`
+
+```{r}
+
+```
+
+
+```{r}
+
+```
+
+
+```{r}
+
+```
+
+```{r}
+
+```
+
+
+```{r}
+
+```
+
+
+```{r}
+
+```
+

@@ -3,6 +3,7 @@ title: "FIN511 Week 1"
 output:
   html_document:
     df_print: paged
+  pdf_document: default
 ---
 
 First code chunk used to load the necessary libraries in R
@@ -17,6 +18,7 @@ if you don't have these libraries, please uncomment the code and install them or
 library(ggplot2)
 library(readxl)
 library(dplyr)
+library(reshape2)
 ```
 
 The following code chunk shows a very "dumb" way to load excel spreadsheets in R directly, skipping lines
@@ -113,16 +115,136 @@ ggplot(filter(df, Large_Weight < 1, Small_Weight < 1), aes(x=Portfolio_SD, y=Por
   ylab("Portfolio rate or return (in %)")
 ```
 
-```{r}
+How to generate the answers automatically
 
+First let's create a second dataframe with the modified parameters and call it df2
+```{r}
+# Risk Free rate
+RF <- 3
+# The large Weight is a sequence that goes from -1 to 2 in 0.01 steps
+Large_Weight <- seq(-1,2,0.01)
+# The Small Weight is simply 1 - Large Weight
+Small_Weight <- 1 - Large_Weight
+
+# Large return
+LR <- 8
+# Small return
+SR <- 15
+
+# Correlation (using CR because cor is an R funcion therefore reserved word)
+CR <- -0.8
+
+# Large Standard Deviation
+LSD <- 25
+# Small Standard Deviation 
+SSD <- 50
+
+# lets create the dataframe. Note, R automatically recycle variables to fit the lenght of the dataframe
+# therefore is important that the first variable is the correct lenght.
+
+df2 <- data.frame("RF" = RF ,"Large_Weight" = Large_Weight, "Small_Weight" = Small_Weight, "LR" = LR, "SR" = SR,
+                 "CR" = CR, "LSD" = LSD, "SSD" = SSD)
+
+# We could have also avoided all the variable declarations and just do:
+# df <- data.frame("Large_Weight" = seq(-1,2,0.01), "Small_Weight" = 1 - seq(-1,2,0.01), "LR" = 8)
+
+# Now let's add the calculated columns (note that column can be added just using df "$" name_of_the_column)
+# and we use the dollar sign to select the column by name as well
+# Important Don't use spaces in the name of columns or variables or anything in general, it's just bad 
+# practice at best and in most cases the software will give you an error
+df2$Portfolio_SD <- sqrt(df2$Large_Weight^2 * df2$LSD^2 + df2$Small_Weight^2 * df2$SSD^2 + 
+                          2*df2$CR*df2$Large_Weight*df2$LSD*df2$Small_Weight*df2$SSD)
+
+df2$Portfolio_Return <- df2$Large_Weight*df2$LR + df2$Small_Weight*df2$SR
+
+df2$Sharpe_Ratio <- (df2$Portfolio_Return - df2$RF)/df2$Portfolio_SD
+
+# let's verify that our dataframe is created correctly
+head(df2)
+tail(df2)
+```
+
+Let see the modified chart
+
+```{r}
+# Let's use GGPLOT to create our charts, it gives us more customization abilities
+# for example we can encode the sharpe ratio as color along the curve
+
+
+ggplot(df2, aes(x=Portfolio_SD, y=Portfolio_Return)) +
+  geom_point(aes(color=Sharpe_Ratio)) +
+  xlab("Portfolio Standard Deviation") +
+  ylab("Portfolio rate or return (in %)")
+  
+```
+And now overlay them. In R this is not very automated, please follow the code
+This example is simplified by the fact that the portfolio rate of return does not depend on 
+the correlation coefficent but only by the weights, so we can use it "as is" for our Y axis
+
+```{r}
+# first we need to create a dataframe with the information we need. 
+# the portfolio rate of return is our Y and cor_04 and cor_min08 are the standard deviations
+
+# create a simple dataframe with only the variables of interest (this step is not necessary but it is easier to verify)
+overlay_df <- data.frame(Y=df$Portfolio_Return, cor_04=df$Portfolio_SD, cor_min08=df2$Portfolio_SD)
+
+# melt the dataframe to stack the variables in a single column
+overlay_df.m <- melt(overlay_df, id.vars = "Y", measure.vars = c("cor_04", "cor_min08"))
+
+# double check the stacking is correct 
+head(overlay_df.m)
+tail(overlay_df.m)
+
+
+# plot reversing the axis (we put Y where X is expected and so on)
+ggplot(overlay_df.m, aes(value, Y, colour = variable)) + 
+  geom_point() + 
+  xlab("Portfolio Standard Deviation") +
+  ylab("Portfolio rate or return (in %)")
 ```
 
 ```{r}
 
 ```
 
+Question 1: Find the composition of the portfolio at minimum variance 
+```{r}
+# the function filter from dyplr is very useful in this case. 
+filter(df2, Portfolio_SD == min(Portfolio_SD))
+
+```
+
+Question 2: 
 ```{r}
 
+```
+
+Question 3 shows something that is very common... what if there isn't a portfolio return exactly equal to 18.
+Note: -check the numbers, I'm giving the template, not the solution
+can be approached in 2 ways. First, a brute force approach using the filter function from dyplr
+Second, we can calculate exactly the 
+
+Question 3:
+```{r}
+# Test if there is a return exactly equal to 18.
+filter(df2, Portfolio_Return == 18)
+
+# then we just filter the portfolio around the value and we select the correct row
+filter(df2, Portfolio_Return > 17.5 & Portfolio_Return < 18.5)
+
+# or we just use a neat function "which.min" which returns the row where the absolute value
+# of the difference between the Portfolio_Return and 20 is at its minimum
+
+row.number <- which.min(abs(df2$Portfolio_Return - 18))
+
+# and we verify that is correct.
+df2[row.number,]
+
+```
+
+
+
+```{r}
 ```
 
 ```{r}

@@ -17,6 +17,7 @@ if you don't have these libraries, please uncomment the code and install them or
 
 library(ggplot2)
 library(readxl)
+library(reshape2)
 ```
 
 The following code chunk shows a very "dumb" way to load excel spreadsheets in R directly, skipping lines
@@ -151,27 +152,270 @@ head(df.3.myst)
 
 ```
 
+### generate basic stats and CAPM regression for mystery security 1
+```{r}
+# computation of the values, rounded to the third digit
+mys.1.av.ret = round(mean(df.3.myst$`Security 1`),digits = 3)
+mys.1.av.ex.ret = round(mean(df.3.myst$`Security 1` - df.3.myst$RF),digits = 3)
+
+# step 1 let build the model (lm is the function for linear models, and the regression is a linear model)
+model.m.1 <- lm(`Security 1`~ Mkt_RF ,data=df.3.myst)
+
+# step 2 let see the model and extract the coefficients
+model.m.1
+
+mys.1.CAPM.alpha <- model.m.1$coefficients[[1]]
+mys.1.CAPM.beta <- model.m.1$coefficients[[2]]
+
+# step 3 let verify r-squared
+mys.1.r.squared <- summary(model.m.1)$r.squared
+
+# let show the anova table to verify if the model is valid 
+anova(model.m.1)
+
+# and the summary of the model
+summary(model.m.1)
+
+
+```
+
+### Generate the 3-Factor model for mystery Security 1
+
+```{r}
+# step 1 let build the model
+model.3f.m.1 <- lm(`Security 1` ~ Mkt_RF + SMB + HML ,data=df.3.myst)
+
+# step 2 let see the model and extract the coefficients
+model.3f.m.1
+
+# notice the index values reflect the order in which the variables are put in the equation
+# except for alpha (intercept) which will be 1
+mys.1.3f.alpha <- model.3f.m.1$coefficients[[1]]
+mys.1.3f.beta.market <- model.3f.m.1$coefficients[[2]]
+mys.1.3f.beta.size <- model.3f.m.1$coefficients[[3]]
+mys.1.3f.beta.value <- model.3f.m.1$coefficients[[4]]
+# step 3 let verify r-squared
+mys.1.3f.r.squared <- summary(model.3f.m.1)$r.squared
+
+# let show the anova table to verify if the model is valid 
+anova(model.3f.m.1)
+
+# and the summary of the model
+summary(model.3f.m.1)
+```
+
+### Summary Mystery Security 1
+
+Average return (in %): `r mys.1.av.ret`
+
+Average excess return (in %): `r mys.1.av.ex.ret`
+
+CAPM alpha (in %): `r mys.1.CAPM.alpha`
+
+CAPM market beta: `r mys.1.CAPM.beta`
+
+R-squared of CAPM regression: `r mys.1.r.squared`
+
+3-Factor alpha (in %): `r mys.1.3f.alpha`
+
+3-Factor market beta: `r mys.1.3f.beta.market`
+
+3-Factor size beta: `r mys.1.3f.beta.size`
+
+3-Factor value beta: `r mys.1.3f.beta.value`
+
+R-squared of 3-Factor regression: `r mys.1.3f.r.squared`
+
 
 ```{r}
 
 ```
 
 
+### generate basic stats and CAPM regression for mystery security 2
+```{r}
+# computation of the values, rounded to the third digit
+mys.2.av.ret = round(mean(df.3.myst$`Security 2`),digits = 3)
+mys.2.av.ex.ret = round(mean(df.3.myst$`Security 2` - df.3.myst$RF),digits = 3)
+
+# step 1 let build the model (lm is the function for linear models, and the regression is a linear model)
+model.m.2 <- lm(`Security 2`~ Mkt_RF ,data=df.3.myst)
+
+# step 2 let see the model and extract the coefficients
+model.m.2
+
+mys.2.CAPM.alpha <- model.m.2$coefficients[[1]]
+mys.2.CAPM.beta <- model.m.2$coefficients[[2]]
+
+# step 3 let verify r-squared
+mys.2.r.squared <- summary(model.m.2)$r.squared
+
+# let show the anova table to verify if the model is valid 
+anova(model.m.2)
+
+# and the summary of the model
+summary(model.m.2)
+
+
+```
+
+### Generate the 3-Factor model for mystery Security 2
+
+```{r}
+# step 1 let build the model
+model.3f.m.2 <- lm(`Security 2` ~ Mkt_RF + SMB + HML ,data=df.3.myst)
+
+# step 2 let see the model and extract the coefficients
+model.3f.m.2
+
+# notice the index values reflect the order in which the variables are put in the equation
+# except for alpha (intercept) which will be 1
+mys.2.3f.alpha <- model.3f.m.2$coefficients[[1]]
+mys.2.3f.beta.market <- model.3f.m.2$coefficients[[2]]
+mys.2.3f.beta.size <- model.3f.m.2$coefficients[[3]]
+mys.2.3f.beta.value <- model.3f.m.2$coefficients[[4]]
+# step 3 let verify r-squared
+mys.2.3f.r.squared <- summary(model.3f.m.2)$r.squared
+
+# let show the anova table to verify if the model is valid 
+anova(model.3f.m.2)
+
+# and the summary of the model
+summary(model.3f.m.2)
+```
+
+### Summary Mystery Security 2
+
+Average return (in %): `r mys.2.av.ret`
+
+Average excess return (in %): `r mys.2.av.ex.ret`
+
+CAPM alpha (in %): `r mys.2.CAPM.alpha`
+
+CAPM market beta: `r mys.2.CAPM.beta`
+
+R-squared of CAPM regression: `r mys.2.r.squared`
+
+3-Factor alpha (in %): `r mys.2.3f.alpha`
+
+3-Factor market beta: `r mys.2.3f.beta.market`
+
+3-Factor size beta: `r mys.2.3f.beta.size`
+
+3-Factor value beta: `r mys.2.3f.beta.value`
+
+R-squared of 3-Factor regression: `r mys.2.3f.r.squared`
+
+
 ```{r}
 
 ```
 
+
+### generate basic stats and CAPM regression for mystery security 3
 ```{r}
+# computation of the values, rounded to the third digit
+mys.3.av.ret = round(mean(df.3.myst$`Security 3`),digits = 3)
+mys.3.av.ex.ret = round(mean(df.3.myst$`Security 3` - df.3.myst$RF),digits = 3)
+
+# step 1 let build the model (lm is the function for linear models, and the regression is a linear model)
+model.m.3 <- lm(`Security 3`~ Mkt_RF ,data=df.3.myst)
+
+# step 2 let see the model and extract the coefficients
+model.m.3
+
+mys.3.CAPM.alpha <- model.m.3$coefficients[[1]]
+mys.3.CAPM.beta <- model.m.3$coefficients[[2]]
+
+# step 3 let verify r-squared
+mys.3.r.squared <- summary(model.m.3)$r.squared
+
+# let show the anova table to verify if the model is valid 
+anova(model.m.3)
+
+# and the summary of the model
+summary(model.m.3)
+
 
 ```
 
+### Generate the 3-Factor model for mystery Security 3
 
 ```{r}
+# step 1 let build the model
+model.3f.m.3 <- lm(`Security 3` ~ Mkt_RF + SMB + HML ,data=df.3.myst)
 
+# step 2 let see the model and extract the coefficients
+model.3f.m.3
+
+# notice the index values reflect the order in which the variables are put in the equation
+# except for alpha (intercept) which will be 1
+mys.3.3f.alpha <- model.3f.m.3$coefficients[[1]]
+mys.3.3f.beta.market <- model.3f.m.3$coefficients[[2]]
+mys.3.3f.beta.size <- model.3f.m.3$coefficients[[3]]
+mys.3.3f.beta.value <- model.3f.m.3$coefficients[[4]]
+# step 3 let verify r-squared
+mys.3.3f.r.squared <- summary(model.3f.m.3)$r.squared
+
+# let show the anova table to verify if the model is valid 
+anova(model.3f.m.3)
+
+# and the summary of the model
+summary(model.3f.m.3)
 ```
+
+### Summary Mystery Security 3
+
+Average return (in %): `r mys.3.av.ret`
+
+Average excess return (in %): `r mys.3.av.ex.ret`
+
+CAPM alpha (in %): `r mys.3.CAPM.alpha`
+
+CAPM market beta: `r mys.3.CAPM.beta`
+
+R-squared of CAPM regression: `r mys.3.r.squared`
+
+3-Factor alpha (in %): `r mys.3.3f.alpha`
+
+3-Factor market beta: `r mys.3.3f.beta.market`
+
+3-Factor size beta: `r mys.3.3f.beta.size`
+
+3-Factor value beta: `r mys.3.3f.beta.value`
+
+R-squared of 3-Factor regression: `r mys.3.3f.r.squared`
+
+
+
+## Securities plots
+
+```{r}
+# So far we can see the values, but what about plotting these securities and check
+# their behavior in comparison to the market?
+
+# create a simple dataframe with only the variables of interest (this step is not necessary but it is easier to verify)
+overlay_df.sec <- data.frame(Y=df.3.myst$date, Mkt=df.3.myst$Mkt_RF, Sec_1=df.3.myst$`Security 1`, Sec_2=df.3.myst$`Security 2`, Sec_3=df.3.myst$`Security 3`)
+
+# melt the dataframe to stack the variables in a single column
+overlay_df.sec.m <- melt(overlay_df.sec, id.vars = "Y", measure.vars = c("Mkt", "Sec_1", "Sec_2", "Sec_3"))
+
+# lets convert the date to a date recognizable by r
+overlay_df.sec.m$Y <- as.Date(paste0(as.character(overlay_df.sec.m$Y),'01'), format='%Y%m%d')
+
+# plot
+p <- ggplot(overlay_df.sec.m, aes(Y, value, colour = variable)) + 
+  geom_line() + 
+  xlab("Year") +
+  ylab("Securities rate or return (in %)")
+
+p
+```
+
+# Lets plot the securities and the market one by one
 
 
 ```{r}
+p + geom_line(aes(colour = variable)) + facet_wrap(~ variable)
 
 ```
-

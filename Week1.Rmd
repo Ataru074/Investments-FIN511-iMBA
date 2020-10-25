@@ -7,7 +7,7 @@ output:
 ---
 
 First code chunk used to load the necessary libraries in R
-if you don't have these libraries, please uncomment the code and install them or install them in R-Studio.
+if you don't have these libraries, please un-comment the code and install them or install them in R-Studio.
 
 ```{r}
 # load libraries
@@ -40,6 +40,7 @@ rt_vol_risky_and_rf <- read_xlsx("/Users/ataru074/Desktop/Education/MBA/03 2020 
 rt_vol_risky_assets <- read_xlsx("/Users/ataru074/Desktop/Education/MBA/03 2020 Fall/FIN511 Investments/Return-Volatility-EXAMPLES.xlsx", sheet = 2, skip = 1)
 
 head(df1_mom_returns)
+tail(df1_mom_returns)
 ```
 Lets replicate the "two risky assets" spreadsheet
 
@@ -70,6 +71,7 @@ SSD <- 50
 
 df <- data.frame("RF" = RF ,"Large_Weight" = Large_Weight, "Small_Weight" = Small_Weight, "LR" = LR, "SR" = SR,
                  "CR" = CR, "LSD" = LSD, "SSD" = SSD)
+
 
 # We could have also avoided all the variable declarations and just do:
 # df <- data.frame("Large_Weight" = seq(-1,2,0.01), "Small_Weight" = 1 - seq(-1,2,0.01), "LR" = 8)
